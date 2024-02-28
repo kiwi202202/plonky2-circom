@@ -4,7 +4,7 @@ import {assert, expect} from "chai";
 
 describe("Groth16", function () {
     it("Should return true when proof is correct", async function () {
-        const verifierFactory = await ethers.getContractFactory("Verifier");
+        const verifierFactory = await ethers.getContractFactory("Groth16Verifier");
         const verifier = await verifierFactory.deploy();
         await verifier.deployed();
 

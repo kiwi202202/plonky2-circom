@@ -1,12 +1,17 @@
 CIRCUIT_NAME=plonky2
 CIRCUIT_PATH=../circuits/plonky2.circom
 INPUT_PATH=../test/data/proof.json
-POT_PATH=~/Downloads/powersOfTau28_hez_final_25.ptau
+POT_PATH=~/Download/powersOfTau28_hez_final_25.ptau
 RAPIDSNARK_PATH=../../../rapidsnark/package/bin/prover
 # node version > 18
 NODE_PATH=node
 SNARKJS_PATH=../../../../snarkjs/cli.js
 NODE_PARAMS="--trace-gc --trace-gc-ignore-scavenger --max-old-space-size=1568000 --initial-old-space-size=1568000 --no-global-gc-scheduling --no-incremental-marking --max-semi-space-size=1024 --initial-heap-size=1568000 --expose-gc"
+
+echo "****GENERATING A NEW RECURSIVE PLONKY2 PROOF****"
+cd .. && cd ..
+cargo test -r --color=always --package plonky2_circom_verifier --lib verifier::tests::test_recursive_verifier --no-fail-fast -- -Z unstable-options --show-output
+cd circom/e2e_tests
 
 echo "****WITNESS GENERATION****"
 start=$(date +%s)

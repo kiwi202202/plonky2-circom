@@ -169,6 +169,9 @@ template GlExtExpN(N) {
   cextmul[N - 1].b[0] <== e2[N - 1][0] * cbits.out[N - 1] + 1 - cbits.out[N - 1];
   cextmul[N - 1].b[1] <== e2[N - 1][1] * cbits.out[N - 1];
 
+  cdouble[N-1].a[0] <== 0;
+  cdouble[N-1].a[1] <== 0;
+
   out[0] <== cextmul[N - 1].out[0];
   out[1] <== cextmul[N - 1].out[1];
 }
