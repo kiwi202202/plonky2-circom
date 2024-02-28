@@ -12,7 +12,7 @@ template GetMerkleProofToCap(nLeaf, nProof) {
   signal output digest[4];
   signal output index;
 
-  component c_digest = HashNoPad_BN(nLeaf, 4);
+  component c_digest = HashNoPad_GL(nLeaf, 4);
   for (var i = 0; i < nLeaf; i++) {
       c_digest.in[i] <== leaf[i];
   }
@@ -33,7 +33,7 @@ template GetMerkleProofToCap(nLeaf, nProof) {
   signal in0[nProof][4];
   signal in1[nProof][4];
   for (var i = 0; i < nProof; i++) {
-    poseidon[i] = Poseidon_BN(4);
+    poseidon[i] = Poseidon_GL(4);
 
     for (var j = 0; j < 4; j++) {
       in0[i][j] <== (1 - shift[i].bit) * cur_digest[i][j];

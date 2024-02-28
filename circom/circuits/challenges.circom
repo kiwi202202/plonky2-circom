@@ -35,7 +35,7 @@ template GetChallenges() {
   var num_inputs_batch_0 = /* circuit digest */ 4 + /* public input */ 4 + NUM_WIRES_CAP() * 4;
   var cd[4];
   cd = CIRCUIT_DIGEST();
-  component observe_batch_0 = HashNoPad_BN(num_inputs_batch_0, SPONGE_WIDTH());
+  component observe_batch_0 = HashNoPad_GL(num_inputs_batch_0, SPONGE_WIDTH());
   for (var i = 0; i < 4; i++) {
     observe_batch_0.in[i] <== cd[i];
   }
@@ -61,7 +61,7 @@ template GetChallenges() {
 
   /// batch 1
   var num_inputs_batch_1 = NUM_PLONK_ZS_PARTIAL_PRODUCTS_CAP() * 4;
-  component observe_batch_1 = HashNoPad_BN(num_inputs_batch_1 < SPONGE_RATE() ? SPONGE_RATE() : num_inputs_batch_1,
+  component observe_batch_1 = HashNoPad_GL(num_inputs_batch_1 < SPONGE_RATE() ? SPONGE_RATE() : num_inputs_batch_1,
                                            SPONGE_WIDTH());
   for (var i = 0; i < NUM_PLONK_ZS_PARTIAL_PRODUCTS_CAP(); i++) {
     for (var j = 0; j < 4; j ++) {
@@ -83,7 +83,7 @@ template GetChallenges() {
 
   /// batch 2
   var num_inputs_batch_2 = NUM_QUOTIENT_POLYS_CAP() * 4;
-  component observe_batch_2 = HashNoPad_BN(num_inputs_batch_2 < SPONGE_RATE() ? SPONGE_RATE() : num_inputs_batch_2,
+  component observe_batch_2 = HashNoPad_GL(num_inputs_batch_2 < SPONGE_RATE() ? SPONGE_RATE() : num_inputs_batch_2,
                                            SPONGE_WIDTH());
   for (var i = 0; i < NUM_QUOTIENT_POLYS_CAP(); i++) {
     for (var j = 0; j < 4; j ++) {
@@ -107,7 +107,7 @@ template GetChallenges() {
   var num_inputs_batch_3 = (NUM_OPENINGS_CONSTANTS() + NUM_OPENINGS_PLONK_SIGMAS() + NUM_OPENINGS_WIRES()
                            + NUM_OPENINGS_PLONK_ZS() + NUM_OPENINGS_PARTIAL_PRODUCTS() + NUM_OPENINGS_QUOTIENT_POLYS()
                            + NUM_OPENINGS_PLONK_ZS_NEXT()) * 2;
-  component observe_batch_3 = HashNoPad_BN(num_inputs_batch_3, SPONGE_WIDTH());
+  component observe_batch_3 = HashNoPad_GL(num_inputs_batch_3, SPONGE_WIDTH());
   var idx = 0;
   for (var i = 0; i < NUM_OPENINGS_CONSTANTS(); i++) {
     observe_batch_3.in[idx] <== openings_constants[i][0];
@@ -156,7 +156,7 @@ template GetChallenges() {
   component observe_batch_4[NUM_FRI_COMMIT_ROUND()];
   for (var round = 0; round < NUM_FRI_COMMIT_ROUND(); round++) {
     var num_inputs = FRI_COMMIT_MERKLE_CAP_HEIGHT() * 4;
-    observe_batch_4[round] = HashNoPad_BN(num_inputs < SPONGE_RATE() ? SPONGE_RATE() : num_inputs, SPONGE_WIDTH());
+    observe_batch_4[round] = HashNoPad_GL(num_inputs < SPONGE_RATE() ? SPONGE_RATE() : num_inputs, SPONGE_WIDTH());
     for (var i = 0; i < FRI_COMMIT_MERKLE_CAP_HEIGHT(); i++) {
       for (var j = 0; j < 4; j ++) {
         observe_batch_4[round].in[i * 4 + j] <== fri_commit_phase_merkle_caps[round][i][j];
@@ -186,7 +186,7 @@ template GetChallenges() {
 
   /// batch 5
   var num_inputs_batch_5 = NUM_FRI_FINAL_POLY_EXT_V() * 2 + 1;
-  component observe_batch_5 = HashNoPad_BN(num_inputs_batch_5, SPONGE_WIDTH());
+  component observe_batch_5 = HashNoPad_GL(num_inputs_batch_5, SPONGE_WIDTH());
   for (var i = 0; i < NUM_FRI_FINAL_POLY_EXT_V(); i++) {
     observe_batch_5.in[i * 2] <== fri_final_poly_ext_v[i][0];
     observe_batch_5.in[i * 2 + 1] <== fri_final_poly_ext_v[i][1];
@@ -211,7 +211,7 @@ template GetChallenges() {
   }
 
   assert(NUM_FRI_QUERY_ROUND() <= 7 + 3 * SPONGE_RATE());
-  component observe_batch_6 = HashNoPad_BN(SPONGE_RATE(), SPONGE_WIDTH());
+  component observe_batch_6 = HashNoPad_GL(SPONGE_RATE(), SPONGE_WIDTH());
   for (var i = 0; i < SPONGE_RATE(); i++) {
     observe_batch_6.in[i] <== observe_batch_5.out[i];
   }
@@ -224,7 +224,7 @@ template GetChallenges() {
     // log(fri_query_indices[i]);
   }
 
-  component observe_batch_7 = HashNoPad_BN(SPONGE_RATE(), SPONGE_WIDTH());
+  component observe_batch_7 = HashNoPad_GL(SPONGE_RATE(), SPONGE_WIDTH());
   if (NUM_FRI_QUERY_ROUND() - 7 > SPONGE_RATE()) {
     for (var i = 0; i < SPONGE_RATE(); i++) {
       observe_batch_7.in[i] <== observe_batch_6.out[i];
@@ -239,7 +239,7 @@ template GetChallenges() {
     }
   }
 
-  component observe_batch_8 = HashNoPad_BN(SPONGE_RATE(), SPONGE_WIDTH());
+  component observe_batch_8 = HashNoPad_GL(SPONGE_RATE(), SPONGE_WIDTH());
   if (NUM_FRI_QUERY_ROUND() - 7 > 2 * SPONGE_RATE()) {
     for (var i = 0; i < SPONGE_RATE(); i++) {
       observe_batch_8.in[i] <== observe_batch_7.out[i];
