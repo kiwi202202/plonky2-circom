@@ -249,6 +249,12 @@ pub fn generate_proof_base64<
     pwpi: &ProofWithPublicInputs<F, C, D>,
     conf: &VerifierConfig,
 ) -> anyhow::Result<String> {
+    println!("lookup_zs {}", pwpi.proof.openings.lookup_zs.len());
+    println!(
+        "lookup_zs_next {}",
+        pwpi.proof.openings.lookup_zs_next.len()
+    );
+
     let mut proof_size: usize =
         (conf.num_wires_cap + conf.num_plonk_zs_partial_products_cap + conf.num_quotient_polys_cap)
             * conf.hash_size;
@@ -278,6 +284,7 @@ pub fn generate_proof_base64<
         }
     }
 
+    // let mut proof_size: usize = 0;
     proof_size += (conf.num_openings_constants
         + conf.num_openings_plonk_sigmas
         + conf.num_openings_wires
@@ -635,10 +642,8 @@ pub fn generate_proof_base64<
     };
 
     let proof_bytes = pwpi.to_bytes();
-    // todo, add assert_eq after plonky2 changes
-    // assert_eq!(proof_bytes.len(), proof_size);
+    assert_eq!(proof_bytes.len(), proof_size);
     println!("proof size: {}", proof_size);
-
     Ok(serde_json::to_string(&circom_proof).unwrap())
 }
 
@@ -992,13 +997,14 @@ mod tests {
     use std::io::Write;
     use std::path::Path;
 
-    // use crate::config::PoseidonBN128GoldilocksConfig;
+    use crate::config::PoseidonBN128GoldilocksConfig;
     use anyhow::Result;
     use plonky2::field::extension::Extendable;
     use plonky2::fri::reduction_strategies::FriReductionStrategy;
     use plonky2::fri::FriConfig;
     use plonky2::hash::hash_types::RichField;
     use plonky2::iop::witness::WitnessWrite;
+    use plonky2::plonk;
     use plonky2::plonk::circuit_data::{CommonCircuitData, VerifierOnlyCircuitData};
     use plonky2::plonk::config::{Hasher, PoseidonGoldilocksConfig};
     use plonky2::plonk::proof::ProofWithPublicInputs;
@@ -1146,11 +1152,17 @@ mod tests {
         let (proof, vd, cd) =
             recursive_proof::<F, C, C, D>(proof, vd, cd, &standard_config, None, true, true)?;
 
-        // type CBn128 = PoseidonBN128GoldilocksConfig;
-        // let (proof, vd, cd) =
-        //     recursive_proof::<F, CBn128, C, D>(proof, vd, cd, &standard_config, None, true, true)?;
+        type CBn128 = PoseidonBN128GoldilocksConfig;
+        let (proof, vd, cd) =
+            recursive_proof::<F, CBn128, C, D>(proof, vd, cd, &standard_config, None, true, true)?;
+
+        // let proof_bytes = proof.to_bytes();
+        // let mut plonky2_proof_file = File::create("proof")?;
+        // plonky2_proof_file.write_all(&proof_bytes)?;
 
         let conf = generate_verifier_config(&proof)?;
+        // println!("{}", conf.num_public_inputs);
+        // println!("pb len{}", proof.public_inputs.len());
         let (circom_constants, circom_gates) = generate_circom_verifier(&conf, &cd, &vd)?;
 
         let mut circom_file = File::create("./circom/circuits/constants.circom")?;
